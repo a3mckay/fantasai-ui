@@ -2,11 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 
 const ChatInterface = () => {
   const [input, setInput] = useState("");
-  const [comparePlayers, setComparePlayers] = useState("");
+  const [comparePlayers, setComparePlayers] = useState(["", ""]);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState("summary");
   const chatBoxRef = useRef(null);
+  const [teamA, setTeamA] = useState([""]);
+  const [teamB, setTeamB] = useState([""]);
+  const [tradeContext, setTradeContext] = useState("");
+
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -25,85 +29,135 @@ const ChatInterface = () => {
     }
   }, [messages]);
 
-
   const sendMessage = async () => {
-    if (!input.trim()) return;
-
     let apiUrl = "";
+
+    // 🧼 Trimmed input list for compare
+    const trimmedComparePlayers = comparePlayers.filter((p) => p.trim() !== "");
+
+    // 🛑 Check inputs per mode
+    if ((mode === "summary" || mode === "analyze") && !input.trim()) {
+      return;
+    }
+    if (mode === "compare" && trimmedComparePlayers.length < 2) {
+      return;
+    }
+    if (mode === "trade") {
+      const trimmedA = teamA.filter((p) => p.trim() !== "");
+      const trimmedB = teamB.filter((p) => p.trim() !== "");
+
+      if (trimmedA.length === 0 || trimmedB.length === 0) {
+        setMessages((prev) => [
+          ...prev,
+          { text: "⚠️ You must enter at least one player on each team.", sender: "bot" }
+        ]);
+        return;
+      }
+
+      const userText = `📢 **TRADE Mode**:\nTeam A: ${trimmedA.join(", ")}\nTeam B: ${trimmedB.join(", ")}\nContext: ${tradeContext || "(no extra context)"}`;
+      setMessages((prev) => [...prev, { text: userText, sender: "user" }]);
+      setTeamA([""]);
+      setTeamB([""]);
+      setTradeContext("");
+      setLoading(true);
+
+      try {
+        const response = await fetch("https://fantasai-test-production.up.railway.app/trade", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            teamA: trimmedA,
+            teamB: trimmedB,
+            context: tradeContext
+          })
+        });
+
+        const data = await response.json();
+        console.log("✅ Trade API Response:", data);
+
+        if (data.error) {
+          setMessages((prev) => [...prev, { text: `⚠️ Error: ${data.error}`, sender: "bot" }]);
+        } else {
+          setMessages((prev) => [...prev, { text: `📈 **Trade Evaluation**\n${data.analysis}`, sender: "bot" }]);
+        }
+      } catch (error) {
+        console.error("❌ Trade API Error:", error);
+        setMessages((prev) => [...prev, { text: "⚠️ Error evaluating trade.", sender: "bot" }]);
+      } finally {
+        setLoading(false);
+      }
+
+      return; // ✅ Important: stop here so rest of sendMessage() doesn't run
+    }
+
+    // 🎯 Build API URL
     if (mode === "summary") {
       apiUrl = `https://fantasai-test-production.up.railway.app/player/${encodeURIComponent(input)}`;
     } else if (mode === "analyze") {
       apiUrl = `https://fantasai-test-production.up.railway.app/analysis/${encodeURIComponent(input)}`;
-    } else if (mode === "compare" && player2.trim()) {
-      apiUrl = `https://fantasai-test-production.up.railway.app/compare?player1=${encodeURIComponent(input)}&player2=${encodeURIComponent(player2)}&context=Standard%20Comparison`;
-    } else {
-      return;
+    } else if (mode === "compare") {
+      const params = new URLSearchParams();
+      trimmedComparePlayers.forEach((p) => params.append("players", p));
+      apiUrl = `https://fantasai-test-production.up.railway.app/compare-multi?${params.toString()}`;
     }
 
-    console.log("📩 Before state update (messages):", messages);
-    
-    const newMessages = [
-      ...messages,
-      {
-        text: `📢 **${mode.toUpperCase()} Mode**: ${input}${player2 ? ` vs ${player2}` : ""}`,
-        sender: "user",
-      },
-    ];
+    // 🧠 Add user message
+    const userText =
+      mode === "compare"
+        ? `📢 **COMPARE Mode**: ${trimmedComparePlayers.join(" vs ")}`
+        : `📢 **${mode.toUpperCase()} Mode**: ${input}`;
+    setMessages((prev) => [...prev, { text: userText, sender: "user" }]);
 
-    console.log("📩 After user input (newMessages):", newMessages); // Debugging
-    
-    setMessages(newMessages);
-    
-    setMessages(newMessages);
-
-    console.log("📩 All Messages:", newMessages); // For debugging
-    
+    // 🧹 Reset inputs
     setInput("");
-    setPlayer2("");
+    setComparePlayers(["", ""]);
     setLoading(true);
+
     try {
       const response = await fetch(apiUrl);
       const data = await response.json();
-
-      console.log("🌍 API Response Data:", data); // Debugging: Check full API response
+      console.log("✅ API Response:", data);
 
       if (data.error) {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { text: "⚠️ Error: " + data.error, sender: "bot" },
+        setMessages((prev) => [
+          ...prev,
+          { text: `⚠️ Error: ${data.error}`, sender: "bot" },
         ]);
       } else {
         if (mode === "compare") {
-          setMessages((prevMessages) => [
-            ...prevMessages,
+          setMessages((prev) => [
+            ...prev,
             { text: `⚖ **Comparison**\n${data.comparison}`, sender: "bot" },
           ]);
         } else if (mode === "analyze") {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: `🔍 **Analysis** for ${input}\n${data.openai_analysis}`, sender: "bot" },
+          setMessages((prev) => [
+            ...prev,
+            {
+              text: `🔍 **Analysis** for ${data.player_name || input}\n${data.openai_analysis}`,
+              sender: "bot",
+            },
           ]);
         } else {
-          setMessages((prevMessages) => {
-            console.log("📩 Before bot response (prevMessages):", prevMessages);
-            console.log("📩 API Response Being Added:", `📊 **${data.player_name}**\n${data.summary}`);
-
-            return [
-              ...prevMessages,
-              { text: `📊 **${data.player_name}**\n${data.summary}`, sender: "bot" }
-            ];
-          });
+          setMessages((prev) => [
+            ...prev,
+            {
+              text: `📊 **${data.player_name}**\n${data.summary}`,
+              sender: "bot",
+            },
+          ]);
         }
-      } // ✅ Now the `if`/`else` structure is properly closed
-
-    } catch (error) {  // ✅ `catch` is now correctly placed
-      setMessages((prevMessages) => [
-        ...prevMessages,
+      }
+    } catch (error) {
+      console.error("❌ Error fetching:", error);
+      setMessages((prev) => [
+        ...prev,
         { text: "⚠️ Error fetching data.", sender: "bot" },
       ]);
+    } finally {
+      setLoading(false);
     }
-
   };
+  
   return (
     <div className="chat-container">
       <h1 className="hero-text">
@@ -146,28 +200,37 @@ const ChatInterface = () => {
         >
           Compare
         </button>
+        <button
+          onClick={() => setMode("trade")}
+          className={mode === "trade" ? "active" : ""}
+        >
+          Trade
+        </button>
+
       </div>
 
       {/* Input Box */}
       <div className="input-box">
-        <input
-          type="text"
-          placeholder={
-            mode === "compare" ? "Enter first player..." : "Ask about a player..."
-          }
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e)=> {
-            if (e.key === "Enter") {
-              sendMessage();
-            }
-          
-          }}
-        />
+        {/* For summary & analyze */}
+        {(mode === "summary" || mode === "analyze") && (
+          <input
+            type="text"
+            placeholder="Ask about a player..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                sendMessage();
+              }
+            }}
+          />
+        )}
+
+        {/* For compare (already working) */}
         {mode === "compare" && (
           <div className="compare-inputs">
             {comparePlayers.map((player, idx) => (
-              <div key={idx} style={{ marginBottom: "10px" }}>
+              <div key={idx} className="compare-input-row">
                 <input
                   type="text"
                   placeholder={`Enter player ${idx + 1}`}
@@ -178,11 +241,10 @@ const ChatInterface = () => {
                     setComparePlayers(updated);
                   }}
                 />
-                {/* Only show Add Player under the last field */}
                 {idx === comparePlayers.length - 1 && comparePlayers.length < 10 && (
                   <button
                     onClick={() => setComparePlayers([...comparePlayers, ""])}
-                    style={{ marginTop: "5px" }}
+                    className="add-player-button"
                   >
                     + Add Player
                   </button>
@@ -191,11 +253,62 @@ const ChatInterface = () => {
             ))}
           </div>
         )}
+        {mode === "trade" && (
+          <div className="trade-inputs">
+            <div className="trade-side">
+              <h3>Team A</h3>
+              {teamA.map((player, idx) => (
+                <input
+                  key={idx}
+                  type="text"
+                  placeholder={`Team A Player ${idx + 1}`}
+                  value={player}
+                  onChange={(e) => {
+                    const updated = [...teamA];
+                    updated[idx] = e.target.value;
+                    setTeamA(updated);
+                  }}
+                />
+              ))}
+              {teamA.length < 10 && (
+                <button onClick={() => setTeamA([...teamA, ""])}>+ Add Player</button>
+              )}
+            </div>
+
+            <div className="trade-side">
+              <h3>Team B</h3>
+              {teamB.map((player, idx) => (
+                <input
+                  key={idx}
+                  type="text"
+                  placeholder={`Team B Player ${idx + 1}`}
+                  value={player}
+                  onChange={(e) => {
+                    const updated = [...teamB];
+                    updated[idx] = e.target.value;
+                    setTeamB(updated);
+                  }}
+                />
+              ))}
+              {teamB.length < 10 && (
+                <button onClick={() => setTeamB([...teamB, ""])}>+ Add Player</button>
+              )}
+            </div>
+
+            <textarea
+              className="trade-context"
+              placeholder="Add trade context (e.g. win-now, rebuilding, positional needs)..."
+              value={tradeContext}
+              onChange={(e) => setTradeContext(e.target.value)}
+            />
+          </div>
+        )}
 
         <button className="send-button" onClick={sendMessage}>
           Send
         </button>
       </div>
+
     </div>
   );
 };
