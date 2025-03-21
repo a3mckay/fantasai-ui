@@ -1,0 +1,210 @@
+/* 🌿 Set full-page background to dark green */
+body {
+  background-color: #165B33; /* Deep baseball field green */
+  color: white; /* White for general page text */
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 🎤 Hero Text (Big Title) */
+.hero-text {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 20px;
+}
+
+/* 📩 Messages Container */
+.messages-container {
+  display: flex;
+  flex-direction: column-reverse; /* ✅ Makes newest messages appear at bottom */
+  width: 100%;
+}
+
+/* 💬 Chat Box (Where messages appear) */
+.chat-box {
+  width: 80%;
+  max-width: 600px;
+  height: 440px;
+  margin: 20px auto;
+  padding: 15px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  overflow-y: auto;         /* ✅ Enables scrolling */
+  overflow-x: hidden;
+  word-break: break-word;   /* ✅ Ensures text doesn't overflow */
+  white-space: pre-wrap;    /* ✅ Preserves new lines */
+  scrollbar-width: thin;    /* ✅ For better scroll appearance (Firefox) */
+  scrollbar-color: #ccc transparent;
+}
+
+/* 🎨 Scrollbar Styling (For WebKit browsers) */
+.chat-box::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-box::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 10px;
+}
+
+/* 🤖 Bot Messages */
+.bot-message {
+  background-color: #f1f1f1;
+  color: black;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+/* 🧑‍💻 User Messages */
+.user-message {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 5px 0;
+  text-align: right;
+}
+
+/* 📝 Input Box */
+.input-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 600px;
+  margin: 10px auto;
+}
+
+/* 🔍 Input Field */
+.input-box input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  max-width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center;
+}
+
+/* 🚀 Send Button */
+.input-box button {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #d32f2f !important;
+  color: white;
+  cursor: pointer;
+}
+
+/* 📱 Responsive: Stack Input & Button on Small Screens */
+@media (max-width: 480px) {
+  .input-box {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .input-box input,
+  .input-box button {
+    width: 100%;
+  }
+}
+
+/* 📢 Mode Selector */
+.mode-selector {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.mode-selector button {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+}
+
+.mode-selector button.active {
+  background-color: #0056b3;
+}
+
+/* 📩 Adjust Input Box for Two Inputs */
+.input-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 600px;
+  margin: 10px auto;
+}
+
+.input-box input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.input-box button {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+/* 📱 Responsive Adjustments */
+@media (max-width: 480px) {
+  .input-box {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .input-box input,
+  .input-box button {
+    width: 100%;
+  }
+
+  .mode-selector {
+    flex-direction: column;
+  }
+
+  .mode-selector button {
+    width: 100%;
+  }
+}
+
+.input-box button:hover {
+  background-color: #0056b3;
+}
