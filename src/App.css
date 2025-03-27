@@ -27,6 +27,7 @@ body {
   justify-content: center;
 }
 
+/* 🟦 Login Screen */
 .login-screen {
   display: flex;
   flex-direction: column;
@@ -130,29 +131,20 @@ body {
   font-weight: bold;
   max-width: 100%;
   box-sizing: border-box;
-
-  /* 🔽 Remove this: */
-  /* text-align: right; */
-
-  /* 🔼 Add this: */
   text-align: left;
 }
-
 
 /* ✅ Highlighted Box (e.g. **TRADE Mode**) */
 .highlight-box {
   background-color: #007bff;
   color: white;
-  padding: 2px 4px 2px 6px;  /* top, right, bottom, left */
+  padding: 2px 4px 2px 6px;
   border-radius: 4px;
   font-weight: bold;
-  display: inline;           /* ✅ not inline-block */
-  margin-right: 0px;         /* ✅ space after the box, not inside */
+  display: inline;
+  margin-right: 0px;
   white-space: nowrap;
 }
-
-
-
 
 /* 📝 Input Box */
 .input-box {
@@ -166,7 +158,6 @@ body {
   flex-wrap: wrap;
 }
 
-/* 🔍 Input Field */
 .input-box input {
   flex: 1;
   padding: 10px;
@@ -177,7 +168,6 @@ body {
   text-align: center;
 }
 
-/* 🚀 Send Button */
 .input-box button {
   padding: 10px 15px;
   font-size: 16px;
@@ -186,6 +176,10 @@ body {
   background-color: #d32f2f !important;
   color: white;
   cursor: pointer;
+}
+
+.input-box button:hover {
+  background-color: #0056b3;
 }
 
 /* 📢 Mode Selector */
@@ -211,20 +205,31 @@ body {
   background-color: #0056b3;
 }
 
+/* 🔄 Compare Mode */
 .compare-inputs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 12px 20px;
+  grid-template-columns: repeat(2, 1fr); /* ✅ Force 2 per row */
+  gap: 16px;
   justify-content: center;
   align-items: start;
   max-width: 600px;
   margin: 20px auto;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .compare-inputs {
+    grid-template-columns: 1fr; /* 📱 Mobile fallback */
+  }
 }
 
 .compare-input-row {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .compare-input-row input {
@@ -233,19 +238,36 @@ body {
   font-size: 16px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.add-player-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .add-player-button {
-  margin-top: 5px;
   font-size: 14px;
-  padding: 6px 10px;
+  padding: 10px 12px;
   background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  width: 100%;
 }
 
+.compare-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+/* 🔁 Trade Mode */
 .trade-inputs {
   display: flex;
   flex-wrap: wrap;
@@ -324,8 +346,4 @@ body {
   .mode-selector button {
     width: 100%;
   }
-}
-
-.input-box button:hover {
-  background-color: #0056b3;
 }

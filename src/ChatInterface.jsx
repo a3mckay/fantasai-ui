@@ -38,7 +38,9 @@ const ChatInterface = ({ canExport }) => {
       const url = window.URL.createObjectURL(new Blob([blob]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "user_queries.xlsx");
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      link.setAttribute("download", `user_queries_${timestamp}.xlsx`);
+
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
@@ -202,11 +204,19 @@ const ChatInterface = ({ canExport }) => {
                     }
                   }}
                 />
-                {idx === comparePlayers.length - 1 && comparePlayers.length < 10 && (
-                  <button onClick={() => setComparePlayers([...comparePlayers, ""])} className="add-player-button">+ Add Player</button>
-                )}
               </div>
             ))}
+
+            {comparePlayers.length < 10 && (
+              <div className="add-player-box">
+                <button
+                  onClick={() => setComparePlayers([...comparePlayers, ""])}
+                  className="add-player-button"
+                >
+                  + Add Player
+                </button>
+              </div>
+            )}
           </div>
         )}
 
