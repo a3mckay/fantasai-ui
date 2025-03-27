@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const ChatInterface = () => {
+const ChatInterface = ({ canExport }) => {
   const [input, setInput] = useState("");
   const [comparePlayers, setComparePlayers] = useState(["", ""]);
   const [messages, setMessages] = useState([]);
@@ -31,6 +31,23 @@ const ChatInterface = () => {
       );
   }, []);
 
+  const handleExportDownload = async () => {
+    try {
+      const response = await fetch("https://fantasai-test-production.up.railway.app/export-queries");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "user_queries.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      console.error("❌ Error downloading export:", error);
+      alert("Failed to download query export.");
+    }
+  };
+
   const sendMessage = async () => {
     let apiUrl = "";
     const trimmedComparePlayers = comparePlayers.filter((p) => p.trim() !== "");
@@ -50,7 +67,7 @@ const ChatInterface = () => {
         return;
       }
 
-      const userText = `📢 **TRADE Mode**:\nTeam A: ${trimmedA.join(", ")}\nTeam B: ${trimmedB.join(", ")}\nContext: ${tradeContext || "(no extra context)"}`;
+      const userText = `📢 **TRADE Mode:**\nTeam A: ${trimmedA.join(", ")}\nTeam B: ${trimmedB.join(", ")}\nContext: ${tradeContext || "(no extra context)"}`;
       setMessages((prev) => [...prev, { text: userText, sender: "user" }]);
       setTeamA([""]);
       setTeamB([""]);
@@ -88,8 +105,8 @@ const ChatInterface = () => {
 
     const userText =
       mode === "compare"
-        ? `📢 **COMPARE Mode**: ${trimmedComparePlayers.join(" vs ")}`
-        : `📢 **${mode.toUpperCase()} Mode**: ${input}`;
+        ? `📢 **COMPARE Mode:** ${trimmedComparePlayers.join(" vs ")}`
+        : `📢 **${mode.toUpperCase()} Mode:** ${input}`;
     setMessages((prev) => [...prev, { text: userText, sender: "user" }]);
 
     setInput("");
@@ -119,15 +136,25 @@ const ChatInterface = () => {
     <div className="chat-container">
       <h1 className="hero-text">⚾ Halp-Bot 2000 – Fantasy Baseball Chatbot 🤖</h1>
 
+      {canExport && (
+        <div style={{ marginBottom: "10px" }}>
+          <button onClick={handleExportDownload}>Export Queries</button>
+        </div>
+      )}
+
       <div className="chat-box" ref={chatBoxRef}>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={msg.sender === "user" ? "user-message" : "bot-message"}
-            dangerouslySetInnerHTML={{ __html: msg.text.replace(/\n/g, "<br/>") }}
-          />
-        ))}
-        {loading && <div className="loading">🤔 Thinking...</div>}
+        {messages.map((msg, idx) => {
+          const formattedText = msg.text
+            .replace(/\n/g, "<br>")
+            .replace(/\*\*(.+?)\*\*/g, '<span class="highlight-box">$1</span>');
+
+          return (
+            <div key={idx} className={`message ${msg.sender}`}>
+              <div dangerouslySetInnerHTML={{ __html: formattedText }} />
+            </div>
+          );
+        })}
+        {loading && <div className="message bot">⏳ Thinking...</div>}
       </div>
 
       <div className="mode-selector">

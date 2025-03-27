@@ -1,7 +1,7 @@
 /* 🌿 Set full-page background to dark green */
 body {
-  background-color: #165B33; /* Deep baseball field green */
-  color: white; /* White for general page text */
+  background-color: #165B33;
+  color: white;
   font-family: 'Arial', sans-serif;
   text-align: center;
   margin: 0;
@@ -17,7 +17,7 @@ body {
 
 /* 🔧 Ensures global layout for app */
 .app-container {
-  background-color: #165B33; /* Your green background */
+  background-color: #165B33;
   color: white;
   font-family: 'Arial', sans-serif;
   min-height: 100vh;
@@ -26,7 +26,6 @@ body {
   align-items: center;
   justify-content: center;
 }
-
 
 .login-screen {
   display: flex;
@@ -56,7 +55,6 @@ body {
   cursor: pointer;
 }
 
-
 /* 🎤 Hero Text (Big Title) */
 .hero-text {
   font-size: 2rem;
@@ -68,35 +66,32 @@ body {
 /* 📩 Messages Container */
 .messages-container {
   display: flex;
-  flex-direction: column-reverse; /* ✅ Makes newest messages appear at bottom */
+  flex-direction: column-reverse;
   width: 100%;
 }
 
-/* 💬 Chat Box (Where messages appear) */
+/* 💬 Chat Box */
 .chat-box {
   width: 80%;
   max-width: 600px;
   height: 440px;
   margin: 20px auto;
   padding: 15px;
-
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-
   background-color: white;
+  color: black;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-
-  overflow-y: auto;         /* ✅ Enables scrolling */
+  overflow-y: auto;
   overflow-x: hidden;
-  word-break: break-word;   /* ✅ Ensures text doesn't overflow */
-  white-space: pre-wrap;    /* ✅ Preserves new lines */
-  scrollbar-width: thin;    /* ✅ For better scroll appearance (Firefox) */
+  word-break: break-word;
+  white-space: normal;
+  scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
 }
 
-/* 🎨 Scrollbar Styling (For WebKit browsers) */
 .chat-box::-webkit-scrollbar {
   width: 8px;
 }
@@ -110,24 +105,54 @@ body {
   border-radius: 10px;
 }
 
-/* 🤖 Bot Messages */
-.bot-message {
-  background-color: #f1f1f1;
-  color: black;
+/* ✅ Message Styling */
+.message {
+  width: 100%;
+  margin: 5px 0;
   padding: 10px;
   border-radius: 5px;
-  margin: 5px 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
-/* 🧑‍💻 User Messages */
-.user-message {
+.message.bot {
+  background-color: #f1f1f1;
+  color: black;
+  text-align: left;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.message.user {
   background-color: #007bff;
   color: white;
-  padding: 10px;
-  border-radius: 5px;
-  margin: 5px 0;
-  text-align: right;
+  font-weight: bold;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  /* 🔽 Remove this: */
+  /* text-align: right; */
+
+  /* 🔼 Add this: */
+  text-align: left;
 }
+
+
+/* ✅ Highlighted Box (e.g. **TRADE Mode**) */
+.highlight-box {
+  background-color: #007bff;
+  color: white;
+  padding: 2px 4px 2px 6px;  /* top, right, bottom, left */
+  border-radius: 4px;
+  font-weight: bold;
+  display: inline;           /* ✅ not inline-block */
+  margin-right: 0px;         /* ✅ space after the box, not inside */
+  white-space: nowrap;
+}
+
+
+
 
 /* 📝 Input Box */
 .input-box {
@@ -138,6 +163,7 @@ body {
   width: 100%;
   max-width: 600px;
   margin: 10px auto;
+  flex-wrap: wrap;
 }
 
 /* 🔍 Input Field */
@@ -162,19 +188,6 @@ body {
   cursor: pointer;
 }
 
-/* 📱 Responsive: Stack Input & Button on Small Screens */
-@media (max-width: 480px) {
-  .input-box {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .input-box input,
-  .input-box button {
-    width: 100%;
-  }
-}
-
 /* 📢 Mode Selector */
 .mode-selector {
   display: flex;
@@ -196,36 +209,6 @@ body {
 
 .mode-selector button.active {
   background-color: #0056b3;
-}
-
-/* 📩 Adjust Input Box for Two Inputs */
-.input-box {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  max-width: 600px;
-  margin: 10px auto;
-}
-
-.input-box input {
-  flex: 1;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.input-box button {
-  padding: 10px 15px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  background-color: #007bff;
-  color: white;
-  cursor: pointer;
 }
 
 .compare-inputs {
@@ -321,7 +304,6 @@ body {
   resize: vertical;
   height: 80px;
 }
-
 
 /* 📱 Responsive Adjustments */
 @media (max-width: 480px) {
