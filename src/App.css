@@ -327,6 +327,33 @@ body {
   height: 80px;
 }
 
+.writer-selector {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 12px 0 20px;
+}
+
+.writer-option {
+  background-color: black;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.writer-option input {
+  display: none;
+}
+
+.writer-option.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+
 /* 📱 Responsive Adjustments */
 @media (max-width: 480px) {
   .input-box {

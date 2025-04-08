@@ -11,6 +11,8 @@ const ChatInterface = ({ canExport }) => {
   const [teamB, setTeamB] = useState([""]);
   const [tradeContext, setTradeContext] = useState("");
   const [playerSuggestions, setPlayerSuggestions] = useState([]);
+  const [writer, setWriter] = useState("IBW");
+
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -137,6 +139,20 @@ const ChatInterface = ({ canExport }) => {
   return (
     <div className="chat-container">
       <h1 className="hero-text">⚾ Halp-Bot 2000 – Fantasy Baseball Chatbot 🤖</h1>
+      <div className="writer-selector">
+        {["IBW", "Razzball", "Both"].map((option) => (
+          <label key={option} className={`writer-option ${writer === option ? "selected" : ""}`}>
+            <input
+              type="radio"
+              name="writer"
+              value={option}
+              checked={writer === option}
+              onChange={() => setWriter(option)}
+            />
+            {option}
+          </label>
+        ))}
+      </div>
 
       {canExport && (
         <div style={{ marginBottom: "10px" }}>
