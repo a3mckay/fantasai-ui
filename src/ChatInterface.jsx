@@ -82,7 +82,8 @@ const ChatInterface = ({ canExport }) => {
         const response = await fetch("https://fantasai-test-production.up.railway.app/trade", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ teamA: trimmedA, teamB: trimmedB, context: tradeContext })
+          body: JSON.stringify({ teamA: trimmedA, teamB: trimmedB, context: tradeContext, writer })
+
         });
 
         const data = await response.json();
@@ -100,11 +101,13 @@ const ChatInterface = ({ canExport }) => {
     }
 
     if (mode === "summary") {
-      apiUrl = `https://fantasai-test-production.up.railway.app/player/${encodeURIComponent(input)}`;
+      apiUrl = `https://fantasai-test-production.up.railway.app/player/${encodeURIComponent(input)}?writer=${writer}`;
     } else if (mode === "compare") {
       const params = new URLSearchParams();
       trimmedComparePlayers.forEach((p) => params.append("players", p));
+      params.append("writer", writer);
       apiUrl = `https://fantasai-test-production.up.railway.app/compare-multi?${params.toString()}`;
+
     }
 
     const userText =
